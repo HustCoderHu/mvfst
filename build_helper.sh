@@ -93,7 +93,7 @@ fi
 set -x
 
 function install_dependencies_linux() {
-  sudo apt-get install        \
+  sudo apt-get install --no-install-recommends \
     g++                       \
     cmake                     \
     libboost-all-dev          \
@@ -192,7 +192,7 @@ function setup_folly() {
       ..
   fi
   make -j "$nproc"
-  make install
+  make install -j "$nproc"
   echo -e "${COLOR_GREEN}Folly is installed ${COLOR_OFF}"
   cd "$BWD" || exit
 }
@@ -209,12 +209,12 @@ function setup_fizz() {
   mkdir -p "$FIZZ_BUILD_DIR"
   cd "$FIZZ_BUILD_DIR" || exit
   cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo       \
-    -DBUILD_TESTS=ON                            \
+    -DBUILD_TESTS=OFF                            \
     -DCMAKE_PREFIX_PATH="$FIZZ_INSTALL_DIR"     \
     -DCMAKE_INSTALL_PREFIX="$FIZZ_INSTALL_DIR"  \
     "$FIZZ_DIR/fizz"
   make -j "$nproc"
-  make install
+  make install -j "$nproc"
   echo -e "${COLOR_GREEN}Fizz is installed ${COLOR_OFF}"
   cd "$BWD" || exit
 }
@@ -230,15 +230,15 @@ function detect_platform() {
 }
 
 detect_platform
-setup_folly
-setup_fizz
+# setup_folly
+# setup_fizz
 
 # build mvfst:
 cd "$MVFST_BUILD_DIR" || exit
 cmake -DCMAKE_PREFIX_PATH="$FOLLY_INSTALL_DIR"    \
  -DCMAKE_INSTALL_PREFIX="$MVFST_INSTALL_DIR"      \
  -DCMAKE_BUILD_TYPE=RelWithDebInfo                \
- -DBUILD_TESTS=On                                 \
+ -DBUILD_TESTS=Off                                 \
   ../..
 make -j "$nproc"
 echo -e "${COLOR_GREEN}MVFST build is complete. To run unit test: \
